@@ -1,0 +1,10 @@
+mailhub={{ data['SSMTP_MAILHUB']|default("smtp.example.com:25", true) }}
+hostname={{ data['SSMTP_HOSTNAME']|default("example.com", true) }}
+UseTLS={{ data['SSMTP_USE_TLS']|default("Yes", true) }}
+UseSTARTTLS={{ data['SSMTP_USE_STARTTLS']|default("Yes", true) }}
+FromLineOverride={{ data['SSMTP_FROMLINEOVERRIDE']|default("Yes", true) }}
+{%- if data['SSMTP_AUTH_ENABLED'] == 1 %}
+AuthMethod={{ data['SSMTP_AUTH_METHOD']|default("LOGIN", true) }}
+AuthUser=test{{ data['SSMTP_AUTH_USER'] }}
+AuthPass=test{{ data['SSMTP_AUTH_PASSWORD'] }}
+{% endif %}

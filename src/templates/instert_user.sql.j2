@@ -1,0 +1,1 @@
+INSERT INTO public."user" (id, uid, "name", email, auth_realm, active, "admin", developer, csrf_token) VALUES(1, '{{ data['ADMIN_USER']|default("admin", true) }}', 'Example User', '{{ data['ADMIN_USER']|default("admin", true) }}@example.com', 'PHP_AUTH', 1, 1, 0, NULL);
