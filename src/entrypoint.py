@@ -21,14 +21,12 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 template_path = os.path.join(base_dir, 'templates')
 config_ini_path = "/srv/dns-ui/config/config.ini"
 ssmtp_path = "/etc/ssmtp/ssmtp.conf"
-insert_user_sql_path = "/app/insert_user.sql"
 migration_002_path = "/srv/dns-ui/migrations/002.php"
 
 if os.getenv('DEV') == "true":
     template_path = os.path.join(base_dir, 'templates')
     config_ini_path = f"{base_dir}/dev/config.ini"
     ssmtp_path = f"{base_dir}/dev/ssmtp.conf"
-    insert_user_sql_path = f"{base_dir}/dev/insert_user.sql"
     migration_002_path = f"{base_dir}/dev/002.php"
 
 
@@ -131,10 +129,7 @@ def main():
                    "search_term": ["DNSUI_", "POSTGRES_"]},
                    {"template": "ssmtp.conf.j2",
                    "output_file": ssmtp_path,
-                    "search_term": ["SSMTP_"]},
-                   {"template": "instert_user.sql.j2",
-                   "output_file": insert_user_sql_path,
-                    "search_term": ["ADMIN_"]}]
+                    "search_term": ["SSMTP_"]}]
     for templ in render_list:
         log.debug(templ)
         template = os.path.join(template_path, templ.get('template'))
