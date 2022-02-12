@@ -54,7 +54,9 @@ def get_from_environment(env_search_terms=["ENV_"]):
 def db_connect_check(host, port, user, password):
     conn = None
     try:
-        conn_string = f"host={host} port={port} user={user} password={password} connect_timeout=1"
+        connect_string = f"host={host} port={port} user={user} password={password} connect_timeout=1"
+        log.debug(f"Connect string: {connect_string}")
+        conn_string = connect_string
         conn = psycopg2.connect(conn_string)
         return True
     except:
@@ -96,7 +98,7 @@ def wait_for_api(url, headers, timeout=30):
             log.error('Could not connect to the PowerDNS API')
             sys.exit(1)
         log.info(
-            f"Waiting for PowerDNS API at: url"
+            f"Waiting for PowerDNS API at ({url})"
         )
         time.sleep(5)
     log.info(f"Successfully connected to PowerDNS API ({url})")
