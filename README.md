@@ -6,7 +6,7 @@ This docker container is inspired by [mjbnz](https://github.com/mjbnz/opera-dns-
 
 A self contained docker image with php-fpm & caddy for [Opera's PowerDNS Admin UI](https://github.com/operasoftware/dns-ui)
 
-This image is intended to be used behind some form of reverse proxy responsible for Authentication. The proxy should set an `X-Auth-User` header with the authenticated username for the application. (the application's support for PHP authentication has been enabled, LDAP disabled).
+This image is intended to be used behind some form of reverse proxy responsible for Authentication. The proxy should set an `X-Auth-User` header with the authenticated username for the application.
 
 An initial user is created during database initialisation by the application, specified by the `ADMIN_USER` environment variable.
 
@@ -61,7 +61,6 @@ services:
       - "traefik.http.routers.dnsui.tls.domains[0].main=dns-admin.example.com"
       - "traefik.http.routers.dnsui.middlewares=dns-auth@docker"
       - "traefik.http.services.dnsui.loadbalancer.server.port=80"
-      - "traefik.docker.network=ns1_proxy"
     environment:
       TZ: Etc/UTC
       DNSUI_WEB_BASEURL: "https://dns-admin.example.com"
