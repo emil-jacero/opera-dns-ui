@@ -2,7 +2,7 @@
 enabled = 1
 baseurl = {{ data['DNSUI_WEB_BASEURL']|default("http://example.com" , true) }}
 logo = {{ data['DNSUI_WEB_LOGO']|default("'/logo-header-opera.png'" , true) }}
-header = 'DNS management'{{ data['DNSUI_WEB_HEADER']|default("'DNS Management'" , true) }}
+header = {{ data['DNSUI_WEB_HEADER']|default("'DNS Management'" , true) }}
 footer = {{ data['DNSUI_WEB_FOOTER']|default("'Developed by <a href=\"https://www.opera.com/\">Opera Software</a>.'", true) }}
 force_change_review = {{ data['DNSUI_FORCE_CHANGE_REVIEW']|default("0" , true) }}
 force_change_comment = {{ data['DNSUI_FORCE_CHANGE_COMMENT']|default("0" , true) }}
