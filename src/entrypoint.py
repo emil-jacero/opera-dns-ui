@@ -142,7 +142,6 @@ def main():
     # Add default user if the database is fresh
     psql_host = os.getenv('POSTGRES_HOST', default="127.0.0.1")
     psql_port = os.getenv('POSTGRES_PORT', default="5432")
-    psql_db = os.getenv('POSTGRES_DB', default="dnsui")
     psql_user = os.getenv('POSTGRES_USER', default="dnsui")
     psql_password = os.getenv('POSTGRES_PASSWORD', default="CHANGEME")
     default_user = os.getenv('ADMIN_USER', default="admin")

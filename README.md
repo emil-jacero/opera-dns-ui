@@ -1,7 +1,5 @@
 # opera-dns-ui
 
-This docker container is inspired by [mjbnz](https://github.com/mjbnz/opera-dns-ui)
-
 ## Summary
 
 A self contained docker image with php-fpm & caddy for [Opera's PowerDNS Admin UI](https://github.com/operasoftware/dns-ui)
@@ -73,9 +71,107 @@ services:
       PDNS_API_HOST: pdns-auth
       PDNS_API_PORT: 8000
       PDNS_API_KEY: CHANGEME
+  dnsui-db:
+    container_name: dnsui-db
+    image: postgres:14
+    restart: always
+    environment:
+      TZ: Europe/Stockholm
+      POSTGRES_USER: dnsui
+      POSTGRES_PASSWORD: CHANGEME
+      POSTGRES_DB: dnsui
+    volumes:
+      - dnsui-db:/var/lib/postgresql/data
+volumes:
+  dnsui-db
+```
+
+### docker-compose with internal PowerDNS Authorative
+
+Note: This does not include a proxy to handle ´Basic Auth´
+
+```yaml
+version: '3'
+services:
+  pdns-auth:
+    container_name: pdns-auth
+    image: emiljacero/powerdns-auth-docker:4.5
+    restart: always
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      # - "8000:8000/tcp"
+    environment:
+      TZ: Etc/UTC
+      ENV_PRIMARY: "yes"
+      ENV_SECONDARY: "no"
+      ENV_LAUNCH: gpgsql
+      ENV_GPGSQL_HOST: pdns-db
+      ENV_GPGSQL_PORT: 5432
+      ENV_GPGSQL_DBNAME: pdns
+      ENV_GPGSQL_USER: pdns
+      ENV_GPGSQL_PASSWORD: CHANGEMEPSQL
+      ENV_GPGSQL_DNSSEC: "yes"
+      ENV_DEFAULT_SOA_EDIT: INCEPTION-INCREMENT
+      ENV_LOCAL_ADDRESS: 0.0.0.0
+      ENV_LOCAL_PORT: 53
+      ENV_WEBSERVER: "yes"
+      ENV_WEBSERVER_ADDRESS: 0.0.0.0
+      ENV_WEBSERVER_ALLOW_FROM: 0.0.0.0/0
+      ENV_WEBSERVER_PORT: 8000
+      ENV_WEBSERVER_PASSWORD: CHANGEMEWEBSERVER
+      ENV_API: "yes"
+      ENV_API_KEY: CHANGEMEAPI
+  pdns-db:
+    container_name: pdns-db
+    image: postgres:14
+    restart: always
+    environment:
+      TZ: Etc/UTC
+      POSTGRES_USER: pdns
+      POSTGRES_PASSWORD: CHANGEMEPSQL
+      POSTGRES_DB: pdns
+    volumes:
+      - pdns-db:/var/lib/postgresql/data
+  dnsui:
+    image: emiljacero/opera-dnsui:v0.2.7
+    container_name: dnsui
+    networks:
+      - proxy
+    ports:
+      - 8080:80/tcp
+    environment:
+      TZ: Etc/UTC
+      DNSUI_WEB_BASEURL: "https://dns-admin.example.com"
+      ADMIN_USER: admin
+      POSTGRES_HOST: dnsui-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: dnsui
+      POSTGRES_USER: dnsui
+      POSTGRES_PASSWORD: CHANGEME
+      PDNS_API_HOST: pdns-auth
+      PDNS_API_PORT: 8000
+      PDNS_API_KEY: CHANGEME
+      DNSUI_WEB_FOOTER: "'My DNS'"
+  dnsui-db:
+    container_name: dnsui-db
+    image: postgres:14
+    restart: always
+    environment:
+      TZ: Europe/Stockholm
+      POSTGRES_USER: dnsui
+      POSTGRES_PASSWORD: CHANGEME
+      POSTGRES_DB: dnsui
+    volumes:
+      - dnsui-db:/var/lib/postgresql/data
+volumes:
+  dnsui-db
+  pdns-db
 ```
 
 ## Environment variables
+
+Source configuration [@operasoftware](https://github.com/operasoftware/dns-ui/blob/v0.2.7/config/config-sample.ini)
 
 |Variable Name|Default|Description|
 |-|-|-|
@@ -130,21 +226,6 @@ services:
 |`SSMTP_AUTH_USER`|``||
 |`SSMTP_AUTH_PASSWORD`|``||
 
-### Example docker invocation
+## Parts and inspiration taken from :)
 
-    docker run -d                                      \
-           -e MAIL_SERVER=smtp.example.com             \
-           -e POSTGRES_HOST=dbhost.example.com         \
-           -e POSTGRES_PASSWORD=a-very-secret-password \
-           -e PDNS_API_HOST=dns.example.com            \
-           -e PDNS_API_KEY=a-very-secret-key           \
-           -v /srv/dnsui:/data                         \
-           --restart=unless-stopped                    \
-       mjbnz/opera-dns-ui:latest
-
-##### Parts and inspiration taken from
-
-* <https://github.com/maxguru/operadns-ui-docker>
-* <https://github.com/LolHens/docker-dns-ui>
-* <https://bitpress.io/caddy-with-docker-and-php/>
-* <https://github.com/stevepacker/docker-containers/tree/caddy-php7>
+This docker container is inspired by [mjbnz](https://github.com/mjbnz/opera-dns-ui)

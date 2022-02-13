@@ -5,6 +5,7 @@ LABEL maintainer="emil@jacero.se"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
+ARG DNS_UI_VERSION=v0.2.7
 
 # Install php extension build deps
 RUN apt-get update -y \
@@ -35,10 +36,11 @@ RUN curl --silent --show-error --fail --location \
 RUN mkdir -p /srv/dns-ui \
     && cd /srv/dns-ui \
     && curl --silent --show-error --fail --location \
-    -o - "https://github.com/operasoftware/dns-ui/archive/master.tar.gz" \
+    -o - "https://github.com/operasoftware/dns-ui/archive/refs/tags/$DNS_UI_VERSION.tar.gz" \
     | tar --strip-components=1 -xz \
     && chown -R www-data:www-data .
 
+# Set timezone
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -47,7 +49,7 @@ ADD requirements.txt /
 RUN pip3 install -r /requirements.txt
 
 # Prepare directories
-RUN mkdir -p /data
+RUN mkdir /data && mkdir /app
 
 COPY src/Caddyfile /etc/Caddyfile
 ADD src /app
